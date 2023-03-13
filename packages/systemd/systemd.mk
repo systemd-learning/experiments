@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 systemd/VERSION := 253.1
-systemd/TARBALL := https://github.com/systemd/systemd-stable/archive/refs/heads/v$(systemd/VERSION)-stable.tar.gz
+systemd/TARBALL := https://github.com/systemd/systemd-stable/archive/refs/tags/v$(systemd/VERSION).tar.gz
 
 systemd/dir = $(BUILD)/systemd/systemd-$(systemd/VERSION)
 
@@ -16,5 +16,5 @@ endef
 
 define systemd/install :=
 	+cd $(systemd/dir)/build
-	+'$(MAKE)' install --debug
+	$(warn "not implemented!")
 endef

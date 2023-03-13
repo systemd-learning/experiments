@@ -1,13 +1,8 @@
 SHELL := /bin/bash
-DOWNLOAD := $(DOWNLOAD)/package
-STATE := $(STATE)/package
-host_path := $(PATH)
-PREFIX ?= rootfs
-prefix := $(PREFIX)
-export PATH := $(TOOLCHAIN)/bin:$(PATH)
-export CPPFLAGS := -I$(STAGE)/$(prefix)/include -L. -fPIC
-export CFLAGS := -I$(STAGE)/$(prefix)/include -L. -fPIC
-export LDFLAGS := -L$(STAGE)/$(prefix)/lib
+DOWNLOAD := $(DOWNLOAD)
+STATE := $(STATE)
+ROOT_PREFIX ?= sysroot
+export LOCAL_BUILD ?= 0
 
 .PHONY: all
 -include $(BASE)/../packages/*/*.mk
@@ -48,9 +43,12 @@ endef
 define downloadpkg =
 	mkdir -p '$(DOWNLOAD)'
 	cd '$(DOWNLOAD)'
-	$(info DOWNLOAD:  $(DOWNLOAD))
+	$(info DOWNLOAD:  $(DOWNLOAD)/$(notdir $($1/TARBALL)))
 	if [ -n '$($1/TARBALL)' ]; then
-		wget '$($1/TARBALL)' -O- > '$(DOWNLOAD)/$(notdir $($1/TARBALL))'
+		$(info xxxxxxxxxx)
+		if [ ! -f $(notdir $($1/TARBALL)) ]; then
+			wget '$($1/TARBALL)' -O- > '$(DOWNLOAD)/$(notdir $($1/TARBALL))'
+		fi
 	fi
 	$(call depfile,$1,download)
 endef
@@ -66,7 +64,7 @@ define preparepkg =
 endef
 
 define buildpkg =
-	mkdir -p '$(STAGE)'
+	mkdir -p '$(HOST)'
 	$(call $1/build)
 	$(call depfile,$1,build)
 endef
@@ -77,7 +75,7 @@ define installpkg =
 endef
 
 define packagepkg =
-	mkdir -p '$(OUT)'
+	mkdir -p '$(OUTPUT)'
 	$(call $1/package)
 	$(call depfile,$1,package)
 endef
@@ -91,5 +89,5 @@ all: $(PACKAGES)
 $(foreach pkg,$(PACKAGES),$(call declareonce,$(pkg)))
 
 clean:
-	rm -rf '$(DOWNLOAD)' '$(STATE)' '$(STAGE)' '$(OUT)' '$(BUILD)'
+	rm -rf '$(DOWNLOAD)' '$(STATE)' '$(STAGE)' '$(OUTPUT)' '$(BUILD)'
 

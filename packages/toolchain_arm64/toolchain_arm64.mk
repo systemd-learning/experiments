@@ -1,6 +1,4 @@
 ARM64_CROSS_VER=gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu
-DOWNLOAD := $(DOWNLOAD)/toolchain
-STATE := $(STATE)/toolchain
 
 toolchain_arm64/VERSION := 11.2
 toolchain_arm64/TARBALL := https://mirrors.tuna.tsinghua.edu.cn/armbian-releases/_toolchain/$(ARM64_CROSS_VER).tar.xz

@@ -13,5 +13,5 @@ define glibc/build :=
 endef
 
 define glibc/install :=
-	+'$(MAKE)' install -C '$(glibc/dir)/build' install_root='$(STAGE)/rootfs'
+	+'$(MAKE)' install -C '$(glibc/dir)/build' install_root='$(HOST)/sysroot'
 endef

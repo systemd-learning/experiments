@@ -12,14 +12,14 @@ define linux/build :=
 		sed -i '/CONFIG_BLK_DEV_RAM=y/a\CONFIG_BLK_DEV_RAM_SIZE=4096' .config
 	fi
 
-	+$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_PREFIX) $(IMG) modules dtbs -j 8
+	+$(CROSS_MAKE_ENV) $(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_PREFIX) $(IMG) modules dtbs -j 8
 endef
 
 define linux/install :=
 	+cd $(linux/dir)
-	+cp arch/$(ARCH)/boot/$(IMG) $(STAGE)
-	+cp arch/$(ARCH)/boot/dts/$(DTB) $(STAGE)
-	+make ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_PREFIX) INSTALL_MOD_PATH=$(STAGE)/rootfs INSTALL_MOD_STRIP=1 modules_install
-	+make ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_PREFIX) INSTALL_HDR_PATH=$(STAGE)/rootfs headers_install
+	+cp arch/$(ARCH)/boot/$(IMG) $(HOST)/
+	+cp arch/$(ARCH)/boot/dts/$(DTB) $(HOST)/
+	+$(CROSS_MAKE_ENV) make ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_PREFIX) INSTALL_MOD_PATH=$(HOST)/sysroot INSTALL_MOD_STRIP=1 modules_install
+	+$(CROSS_MAKE_ENV) make ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_PREFIX) INSTALL_HDR_PATH=$(HOST)/sysroot headers_install
 endef
 
