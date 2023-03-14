@@ -8,7 +8,7 @@ include $(BASE)/../common/env.mk
 define libcap/build :=
 	+cd $(libcap/dir)
 	if [ $(LOCAL_BUILD) -eq 1 ]; then
-		+$(LOCAL_MAKE_ENV)  make CC=/bin/gcc prefix='$(HOST)' install
+		+$(LOCAL_MAKE_ENV) make prefix='$(HOST)' install
 	else
 		+$(CROSS_MAKE_ENV) make CROSS_COMPILE='$(CROSS_PREFIX)' BUILD_CC=/usr/bin/gcc  LDFLAGS='-L$(HOST)/sysroot ' prefix='$(HOST)/sysroot' install
 	fi

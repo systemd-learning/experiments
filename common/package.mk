@@ -18,16 +18,16 @@ endef
 # Dynamically declare dependencies between packages
 #############################################
 define declaredeps =
-$(eval .PHONY: $1)
-$(eval $1: $(call depends,$1,package))
-$(eval $(call depends,$1,package) : $(call depends,$1,install) ; $(call packagepkg,$1) )
-$(eval $(call depends,$1,install) : $(call depends,$1,build)   ; $(call installpkg,$1) )
-$(eval $(call depends,$1,build)   : $(call depends,$1,prepare) ; $(call buildpkg,$1)   )
-$(eval $(call depends,$1,prepare) : $(call depends,$1,download); $(call preparepkg,$1) )
-$(eval $(call depends,$1,download):                            ; $(call downloadpkg,$1))
+	$(eval .PHONY: $1)
+	$(eval $1: $(call depends,$1,package))
+	$(eval $(call depends,$1,package) : $(call depends,$1,install) ; $(call packagepkg,$1) )
+	$(eval $(call depends,$1,install) : $(call depends,$1,build)   ; $(call installpkg,$1) )
+	$(eval $(call depends,$1,build)   : $(call depends,$1,prepare) ; $(call buildpkg,$1)   )
+	$(eval $(call depends,$1,prepare) : $(call depends,$1,download); $(call preparepkg,$1) )
+	$(eval $(call depends,$1,download):                            ; $(call downloadpkg,$1))
 
-$(eval $(call depends,$1,build)   : $(foreach dep,$($1/DEPENDS),$(call depends,$(dep),install)))
-$(foreach dep,$($1/DEPENDS),$(call declareonce,$(dep)))
+	$(eval $(call depends,$1,build)   : $(foreach dep,$($1/DEPENDS),$(call depends,$(dep),install)))
+	$(foreach dep,$($1/DEPENDS),$(call declareonce,$(dep)))
 endef
 
 define declareonce =

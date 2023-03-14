@@ -4,11 +4,11 @@ export BASE := $(PWD)
 export DOWNLOAD := $(BASE)/../download
 export TOOLCHAIN := $(BASE)/toolchain
 export WORK := $(BASE)/work
-export OUTPUT := $(BASE)/output
-export STATE := $(BASE)/state
-export STAGE := $(BASE)/staging
-export BUILD := $(BASE)/build
-export HOST := $(BASE)/host
+export OUTPUT := $(WORK)/output
+export STATE := $(WORK)/state
+export STAGE := $(WORK)/staging
+export BUILD := $(WORK)/build
+export HOST := $(WORK)/host
 
 export ARCH=arm64
 export KCFG=defconfig
