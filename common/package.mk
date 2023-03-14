@@ -30,8 +30,24 @@ define declaredeps =
 	$(foreach dep,$($1/DEPENDS),$(call declareonce,$(dep)))
 endef
 
-define declareonce =
-	$(if $($1_done),,$(call declaredeps,$1) $(eval $1_done=1))
+define declaredeps_local =
+	$(eval .PHONY: local_$1)
+	$(eval local_$1: $(call depends,local_$1,package))
+	$(eval $(call depends,local_$1,package) : $(call depends,local_$1,install) ; $(call packagepkg,local_$1) )
+	$(eval $(call depends,local_$1,install) : $(call depends,loacl_$1,build)   ; $(call installpkg,local_$1) )
+	$(eval $(call depends,local_$1,build)   : $(call depends,local_$1,prepare) ; $(call buildpkg,local_$1)   )
+	$(eval $(call depends,local_$1,prepare) : $(call depends,local_$1,download); $(call preparepkg,local_$1) )
+	$(eval $(call depends,local_$1,download):                            ; $(call downloadpkg,$1))
+
+	$(eval $(call depends,local_$1,build)   : $(foreach dep,$(local_$1/DEPENDS),$(call depends,$(dep),install)))
+	$(foreach dep,$(local_$1/DEPENDS),$(call declareonce,$(dep)))
+endef
+
+       $(if $($1_done),,$(call declaredeps,$1) $(eval $1_done=1))
+
+define declareonce_xxx =
+	$(info xxx)
+	$(if '$2',$(if $(local_$1_doe),,$(call declaredeps_local,$1) $(eval local_$1_done=1)),$(if $($1_done),,$(call declaredeps,$1) $(eval $1_done=1)))
 endef
 
 .SHELLFLAGS = -e -c
@@ -43,9 +59,8 @@ endef
 define downloadpkg =
 	mkdir -p '$(DOWNLOAD)'
 	cd '$(DOWNLOAD)'
-	$(info DOWNLOAD:  $(DOWNLOAD)/$(notdir $($1/TARBALL)))
+	$(info DOWNLOAD: $(DOWNLOAD)/$(notdir $($1/TARBALL)))
 	if [ -n '$($1/TARBALL)' ]; then
-		$(info xxxxxxxxxx)
 		if [ ! -f $(notdir $($1/TARBALL)) ]; then
 			wget '$($1/TARBALL)' -O- > '$(DOWNLOAD)/$(notdir $($1/TARBALL))'
 		fi
@@ -86,7 +101,7 @@ endef
 all: $(PACKAGES)
 
 # Import dependencies between packages and package stages
-$(foreach pkg,$(PACKAGES),$(call declareonce,$(pkg)))
+$(foreach pkg,$(PACKAGES),$(call declareonce_xxx,$(pkg) $2))
 
 clean:
 	rm -rf '$(DOWNLOAD)' '$(STATE)' '$(STAGE)' '$(OUTPUT)' '$(BUILD)'
